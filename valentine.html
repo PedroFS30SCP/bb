@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>💘 Um convite</title>
+  <style>
+    :root{
+      --bg: #07070b;
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.64);
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --shadow: rgba(0,0,0,.55);
+      --accent: #ff4d7d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 70% 20%, rgba(255,77,125,.16), transparent 62%),
+        radial-gradient(720px 520px at 20% 80%, rgba(255,45,85,.10), transparent 58%),
+        radial-gradient(520px 420px at 10% 10%, rgba(255,255,255,.06), transparent 55%),
+        var(--bg);
+      overflow:hidden;
+    }
+
+    .grain{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.10;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 2px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px);
+      mix-blend-mode: overlay;
+      filter: blur(.6px);
+    }
+
+    .float{ position:fixed; inset:0; pointer-events:none; opacity:.28; }
+    .h{
+      position:absolute;
+      font-size: 14px;
+      animation: up linear infinite;
+      transform: translateY(110vh);
+      filter: blur(.15px);
+    }
+    @keyframes up{
+      from{ transform: translateY(110vh) translateX(0); opacity:0; }
+      18%{opacity:1}
+      to{ transform: translateY(-20vh) translateX(var(--dx)); opacity:0; }
+    }
+
+    .wrap{
+      width:min(980px, 92vw);
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items:stretch;
+    }
+    @media (max-width: 900px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 26px;
+      box-shadow: 0 26px 80px var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .text{
+      padding: 26px 26px 22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height: 420px;
+    }
+
+    .topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding: 8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 13px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+
+    .tiny-heart{
+      width: 10px; height:10px;
+      border-radius: 3px;
+      background: rgba(255,77,125,.28);
+      box-shadow: 0 0 0 6px rgba(255,77,125,.08);
+    }
+
+    h1{
+      margin: 14px 0 10px;
+      font-size: clamp(30px, 4.2vw, 54px);
+      line-height: 1.02;
+      letter-spacing: -1.2px;
+    }
+
+    .sub{
+      margin:0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height:1.6;
+      max-width: 60ch;
+    }
+
+    .divider{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+      margin: 18px 0 16px;
+    }
+
+    .buttons{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    button{
+      border:0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 750;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .08s ease, opacity .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .yes{
+      color:#0b0b10;
+      background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+      box-shadow: 0 16px 34px rgba(0,0,0,.38);
+    }
+    .yes:active{ transform: scale(.99); }
+
+    .no{
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .no:hover{ opacity:.92; }
+
+    .result{
+      margin-top: 14px;
+      display:none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,77,125,.28);
+      background: rgba(255,77,125,.10);
+      color: rgba(255,255,255,.92);
+      font-weight: 750;
+    }
+
+    /* contador (4) */
+    .counter{
+      margin-top: 10px;
+      color: rgba(255,255,255,.60);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    /* botão surpresa (5) */
+    #surpriseBtn{
+      display:none;
+      margin-top: 10px;
+    }
+
+    .photo{
+      display:grid;
+      place-items:center;
+      padding: 14px;
+    }
+
+    .frame{
+      width:100%;
+      aspect-ratio: 3 / 4;
+      border-radius: 22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      position:relative;
+    }
+
+    .frame img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      transform: scale(1.03);
+      transition: opacity .26s ease, transform .26s ease, filter .26s ease;
+      filter: saturate(1.05) contrast(1.02);
+    }
+
+    .vignette{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(120% 100% at 50% 30%, transparent 0 55%, rgba(0,0,0,.55) 100%),
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.35));
+      pointer-events:none;
+      mix-blend-mode: multiply;
+    }
+    .shine{
+      position:absolute; inset:-40% -30%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.10), transparent);
+      transform: rotate(12deg);
+      animation: shine 6.2s ease-in-out infinite;
+      pointer-events:none;
+      opacity:.9;
+    }
+    @keyframes shine{
+      0%,50%{ transform: translateX(-45%) rotate(12deg); opacity:0; }
+      60%{ opacity:1; }
+      100%{ transform: translateX(45%) rotate(12deg); opacity:0; }
+    }
+
+    .fade-out{ opacity:0; transform: scale(1.01); filter: saturate(1.02) contrast(1.01); }
+    .fade-in { opacity:1; transform: scale(1.03); }
+
+    .confetti{ position:fixed; inset:0; pointer-events:none; display:none; z-index:5; }
+    .p{
+      position:absolute;
+      width:7px; height:10px;
+      border-radius:3px;
+      opacity:.9;
+      animation: fall 1.5s ease-in forwards;
+    }
+    @keyframes fall{
+      from{ transform: translateY(-12vh) rotate(0deg); }
+      to{ transform: translateY(110vh) rotate(420deg); }
+    }
+
+    /* modal surpresa */
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      z-index:20;
+      padding: 18px;
+    }
+    .modal .box{
+      width: min(520px, 92vw);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 22px;
+      box-shadow: 0 30px 100px rgba(0,0,0,.6);
+      padding: 18px;
+    }
+    .modal h2{
+      margin: 4px 0 6px;
+      font-size: 22px;
+      letter-spacing: -.4px;
+    }
+    .modal p{
+      margin: 0 0 14px;
+      color: rgba(255,255,255,.74);
+      line-height: 1.6;
+    }
+    .modal .actions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .ghost{
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="float" id="float"></div>
+  <div class="confetti" id="confetti"></div>
+
+  <section class="wrap">
+    <div class="panel text">
+      <div>
+        <div class="topline">
+          <div class="tag">💘 pergunta séria</div>
+          <div class="tiny-heart" aria-hidden="true"></div>
+        </div>
+
+        <h1>Queres ser o meu Valentine?</h1>
+        <p class="sub">Quero uma resposta boa da minha bonitaaaa</p>
+
+        <!-- (4) contador -->
+        <div class="counter" id="counter"></div>
+
+        <div class="divider"></div>
+
+        <div class="buttons">
+          <button class="yes" id="yes">Sim 🤍</button>
+          <button class="no" id="no">Não</button>
+        </div>
+
+        <div class="result" id="result">IHIHIHIIHIH, qui bacanaaaaaa. 💞</div>
+
+        <!-- (5) botão surpresa -->
+        <button class="yes" id="surpriseBtn">Abrir surpresa 🎁</button>
+      </div>
+    </div>
+
+    <div class="panel photo">
+      <div class="frame">
+        <img id="mainPhoto" src="foto.jpg" alt="nós" />
+        <div class="vignette"></div>
+        <div class="shine"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal da surpresa -->
+  <div class="modal" id="modal">
+    <div class="box">
+      <h2>Surpresa desbloqueada 🎁</h2>
+      <p id="modalText">
+        Date oficial marcado dia 14 e dia 17 IHIHIHIIHIH ✨
+      </p>
+      <div class="actions">
+        <button class="ghost" id="closeModal">Fechar</button>
+        <button class="yes" id="okModal">Ok 🤍</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // corações discretos
+    const float = document.getElementById("float");
+    const hearts = ["❤","🩷","♡"];
+    const n = 10;
+    const rand = (a,b)=>Math.random()*(b-a)+a;
+
+    for(let i=0;i<n;i++){
+      const d = document.createElement("div");
+      d.className="h";
+      d.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+      d.style.left = rand(0,100) + "vw";
+      d.style.animationDuration = rand(8,14) + "s";
+      d.style.animationDelay = rand(0,8) + "s";
+      d.style.setProperty("--dx", rand(-22,22) + "px");
+      float.appendChild(d);
+    }
+
+    const yes = document.getElementById("yes");
+    const no = document.getElementById("no");
+    const result = document.getElementById("result");
+    const confetti = document.getElementById("confetti");
+    const mainPhoto = document.getElementById("mainPhoto");
+
+    // (4) contador de dias
+    const counter = document.getElementById("counter");
+    const start = new Date("2022-11-13");
+    const today = new Date();
+    const diffDays = Math.floor((today - start) / (1000*60*60*24));
+    counter.textContent = `${diffDays} dias desde que comecei a namorar a babyyy 🥰`;
+
+    // botão "não" foge suave
+    function nudgeNo(){
+      const pad = 16;
+      const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const vh = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      const r = no.getBoundingClientRect();
+      const maxX = vw - r.width - pad;
+      const maxY = vh - r.height - pad;
+      const x = Math.floor(rand(pad, maxX));
+      const y = Math.floor(rand(pad, maxY));
+      no.style.position = "fixed";
+      no.style.left = x + "px";
+      no.style.top = y + "px";
+    }
+    no.addEventListener("mouseenter", nudgeNo);
+    no.addEventListener("click", nudgeNo);
+
+    // confetti minimal
+    function miniConfetti(){
+      confetti.innerHTML="";
+      confetti.style.display="block";
+      for(let i=0;i<60;i++){
+        const p=document.createElement("div");
+        p.className="p";
+        p.style.left = rand(0,100)+"vw";
+        p.style.top  = rand(-18,0)+"vh";
+        const hue = (Math.floor(rand(330, 390)) % 360);
+        p.style.background = `hsl(${hue} 90% 65%)`;
+        p.style.animationDelay = rand(0,.25)+"s";
+        p.style.animationDuration = rand(1.2,1.8)+"s";
+        confetti.appendChild(p);
+      }
+      setTimeout(()=>confetti.style.display="none", 1800);
+    }
+
+    // (5) surpresa
+    const surpriseBtn = document.getElementById("surpriseBtn");
+    const modal = document.getElementById("modal");
+    const closeModal = document.getElementById("closeModal");
+    const okModal = document.getElementById("okModal");
+
+    function openModal(){ modal.style.display = "grid"; }
+    function hideModal(){ modal.style.display = "none"; }
+
+    surpriseBtn.addEventListener("click", openModal);
+    closeModal.addEventListener("click", hideModal);
+    okModal.addEventListener("click", hideModal);
+    modal.addEventListener("click", (e)=>{ if(e.target === modal) hideModal(); });
+
+    yes.addEventListener("click", ()=>{
+      result.style.display="block";
+      yes.textContent="Sim (óbvio) 🤍";
+      no.style.display="none";
+      miniConfetti();
+
+      // mostra botão surpresa
+      surpriseBtn.style.display = "inline-block";
+
+      // troca de foto com fade
+      mainPhoto.classList.add("fade-out");
+      setTimeout(() => {
+        mainPhoto.src = "foto-sim.jpg"; // <-- mete aqui o nome da foto nova
+        mainPhoto.alt = "nós 💞";
+        mainPhoto.classList.remove("fade-out");
+        mainPhoto.classList.add("fade-in");
+        setTimeout(() => mainPhoto.classList.remove("fade-in"), 260);
+      }, 220);
+    });
+  </script>
+</body>
+</html>
